@@ -10,7 +10,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/stcheng1982/IOSMockGPSAgent",
     license="MIT",
-    packages=find_packages(),
+    packages=["py_ios_mockgpsagent"],  # Explicitly list the package
     install_requires=[
         "Flask>=3.0.0",
         "pymobiledevice3>=4.14.16",

@@ -171,7 +171,7 @@ def execute_command():
         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == "__main__":
+def main():
     import argparse
 
     # Ensure the pymobiledevice3 developer script is customized
@@ -201,3 +201,7 @@ if __name__ == "__main__":
         app.run(host=server_host, port=server_port)
     except KeyboardInterrupt:
         print("Server shutting down.")
+
+
+if __name__ == "__main__":
+    main()
