@@ -226,9 +226,27 @@ def execute_command():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+def check_permissions():
+    if os.name == 'posix':
+        # On Unix-like systems, check if running as root
+        if os.geteuid() != 0:
+            print("\033[91mThis script must be run as root. Please use 'sudo'. \033[0m")
+            sys.exit(1)
+    elif os.name == 'nt':
+        # On Windows, check for administrative privileges
+        try:
+            import ctypes
+            is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+            if not is_admin:
+                print("\033[91mThis script must be run as an administrator. \033[0m")
+                sys.exit(1)
+        except ImportError:
+            print("\033[91mUnable to check administrative privileges. \033[0m")
+            sys.exit(1)
 
 def main():
     import argparse
+    check_permissions()
 
     # Ensure the pymobiledevice3 developer script is customized
     ensure_pymobiledevice3_developer_scripts_customized()
