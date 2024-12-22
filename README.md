@@ -11,5 +11,9 @@ pip install git+https://github.com/stcheng1982/IOSMockGPSAgent.git
 ## Usage
 
 ```bash
-iosmockgpsagent --host 0.0.0.0 --port 5000
+sudo iosmockgpsagent
+```
+
+```bash
+sudo iosmockgpsagent --host 0.0.0.0 --port 8888
 ```
