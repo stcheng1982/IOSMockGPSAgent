@@ -129,7 +129,9 @@ def get_server_info():
             <h2>Available Endpoints:</h2>
             <ul>
                 <li><b>GET / :</b> Show this general server information</li>
+                <li><b>GET /devices :</b> Show all connected IOS devices</li>
                 <li><b>POST /setlocation :</b> Set mock gps location on connected IOS device</li>
+                <li><b>POST /clearlocation :</b> Clear mock gps location on connected IOS device</li>
                 <li><b>POST /execute :</b> Execute a generic terminal/cli command</li>
             </ul>
         </li>
