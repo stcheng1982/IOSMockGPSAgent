@@ -68,7 +68,7 @@ def start_tunnel():
     try:
         # Start the tunnel command
         tunnel_process = subprocess.Popen(
-            ["python", "-m", "pymobiledevice3", "lockdown", "start-tunnel"],
+            ["python", "-m", "pymobiledevice3", "remote", "tunneld"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True
@@ -80,14 +80,27 @@ def start_tunnel():
             return
 
         # Parse the output to get the --rsd address
+        rsd_address_line = None
         for line in iter(tunnel_process.stdout.readline, ''):
-            print(line.strip())  # Print tunnel output to console
-            if "--rsd" in line:
-                rsd_address = line.strip()
-                print(f"Extracted RSD Address: {rsd_address}")
+            # print(line.strip())  # Print tunnel output to console
+            if "Created tunnel --rsd" in line:
+                rsd_address_line = line.strip()
                 break
+        if rsd_address_line is None:
+            print("\033[91mError getting the --rsd address. \033[0m")
+            return
+        
+        rsd_start_index = rsd_address_line.find("--rsd")
+        rsd_address = rsd_address_line[rsd_start_index:].strip()
+        print(f"Extracted RSD Address: {rsd_address}")
+
     except Exception as e:
         print(f"Error starting tunnel: {e}")
+    
+    if rsd_address is None or len(rsd_address) == 0:
+        # remote tunnel is not established correctly, print error message in console stderr in red color
+        print("\033[91mRemote tunnel is not established correctly, please check the device connection and start agent again.\033[0m")
+
 
 def stop_tunnel():
     """
@@ -235,12 +248,7 @@ def main():
     tunnel_thread = threading.Thread(target=start_tunnel, daemon=True)
     tunnel_thread.start()
 
-    try:
-        if not rsd_address:
-            # remote tunnel is not established correctly, print error message in console stderr in red color
-            print("\033[91mRemote tunnel is not established correctly, please check the device connection and start agent again.\033[0m")
-            # print("Remote tunnel is not established correctly, please check the device connection and start agent again.", file=sys.stderr)
-            
+    try:            
         app.run(host=server_host, port=server_port)
     except KeyboardInterrupt:
         print("Server shutting down.")
