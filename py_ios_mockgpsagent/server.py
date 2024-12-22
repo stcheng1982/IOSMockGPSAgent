@@ -74,6 +74,11 @@ def start_tunnel():
             text=True
         )
 
+        # if the tunnel process is not started correctly, print error message in console stderr in red color
+        if tunnel_process.poll() is not None:
+            print("\033[91mError starting tunnel. \033[0m")
+            return
+
         # Parse the output to get the --rsd address
         for line in iter(tunnel_process.stdout.readline, ''):
             print(line.strip())  # Print tunnel output to console
@@ -145,6 +150,25 @@ def set_device_location():
         return jsonify({"error": e.stderr}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/clearlocation', methods=['POST'])
+def clear_device_location():
+    """
+    REST endpoint to clear device mock location via POST request.
+    """
+    try:
+        # Execute the command
+        clearloc_cmd = f"pymobiledevice3 developer dvt simulate-location clear {rsd_address}"
+        print(f"Gonna execute command: {clearloc_cmd}")
+        result = subprocess.run(clearloc_cmd, shell=True, text=True, capture_output=False, check=True)
+        cmd_output = "cleared device location"
+        
+        return jsonify({"output": cmd_output})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": e.stderr}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route('/execute', methods=['POST'])
 def execute_command():
