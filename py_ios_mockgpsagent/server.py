@@ -125,6 +125,25 @@ def get_server_info():
 
     return server_info
 
+@app.route('/devices', methods=['GET'])
+def get_ios_devices():
+    """
+    REST endpoint to show all connected (USB or Network) IOS devices.
+    """
+
+    try:
+        # Execute the command
+        list_devices_cmd = f"pymobiledevice3 usbmux list"
+        result = subprocess.run(list_devices_cmd, shell=True, text=True, capture_output=True, check=True)
+        cmd_output = result.stdout
+        
+        # write the cmd_output(json text) into response as application/json content type
+        return cmd_output
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": e.stderr}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/setlocation', methods=['POST'])
 def set_device_location():
     """
